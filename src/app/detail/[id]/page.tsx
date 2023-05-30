@@ -2,6 +2,7 @@ import React from "react";
 import { connectDB } from "../../../../util/database";
 import { ObjectId } from "mongodb";
 import UpdateButton from "./UpdateButton";
+import Comment from "./comment";
 
 const DetailPage = async (props: {
   params: {
@@ -13,7 +14,7 @@ const DetailPage = async (props: {
   const id = props.params.id;
 
   const item = await db.collection("post").findOne({ _id: new ObjectId(id) });
-
+  
   return (
     <div>
       <h1>hi</h1>
@@ -21,6 +22,7 @@ const DetailPage = async (props: {
       <p>{item._id}</p>
       <p>{item.content}</p>
       <UpdateButton id={item._id} />
+      <Comment id={item._id.toString()} />
     </div>
   );
 };
