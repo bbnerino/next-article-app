@@ -1,26 +1,26 @@
+import { getServerSession } from "next-auth/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectDB } from "../../../util/database";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const db = (await connectDB).db("forum");
-
   if (req.method === "GET") {
     const list = await getList(db);
     return res.status(200).json(list);
   }
   if (req.method === "POST") {
-    const { title, content } = req.body;
-    if (title === "" || content === "") {
-      return res.status(400).json({ message: "Invalid title or content" });
+    let session = await getServerSession(req, res, authOptions);
+    console.log(session);
+    if (session) {
+      req.body.author = session.user;
     }
-    const result = await db.collection("post").insertOne({
-      title,
-      content,
-    });
-    return res.status(200).redirect("/list");
+    console.log(req.body);
+    // const result = await db.collection("post").insertOne(req.body);
+    // res.status(200).redirect("/list");
   }
 }
 
